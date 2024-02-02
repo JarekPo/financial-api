@@ -6,5 +6,5 @@ app = FastAPI()
 
 
 @app.get("/")
-def read_root():
+async def read_root():
     return {"Financial": "API"}
