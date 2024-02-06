@@ -6,6 +6,7 @@ from config import API_KEY, FINANCIAL_API_BASE_URL
 app = FastAPI()
 
 FINANCIAL_API_HISTORICAL_URL = f"{FINANCIAL_API_BASE_URL}/historical-price-full"
+SEARCH_TICKER_URL = f"{FINANCIAL_API_BASE_URL}/search-ticker"
 
 
 @app.get("/")
@@ -47,5 +48,23 @@ def get_historical_price(
         raise HTTPException(status_code=401, detail="Invalid API key")
     elif response.status_code == 404:
         return {}
+    else:
+        raise HTTPException(status_code=response.status_code, detail="Unexpected error")
+
+
+@app.get("/search-ticker")
+def get_ticker_list(
+    query: str = Query(..., title="Query", description="Query for the ticker list.")
+) -> Dict[str, List[Dict[str, str]]]:
+    params = {
+        "apikey": API_KEY,
+        "query": query,
+    }
+
+    response = requests.get(SEARCH_TICKER_URL, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        return {"data": data}
     else:
         raise HTTPException(status_code=response.status_code, detail="Unexpected error")
