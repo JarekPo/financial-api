@@ -1,7 +1,8 @@
 from typing import Dict, List, Union
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from models.historical_price import HistoricalPriceResponse, TickerData
+from models.historical_price import HistoricalPriceResponse
+from models.ticker_data import TickerData
 from services.historical_price_service import get_historical_price
 from services.ticker_service import get_ticker_list
 
