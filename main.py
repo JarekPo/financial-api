@@ -5,6 +5,7 @@ from models.historical_price import HistoricalPriceResponse
 from models.ticker_data import TickerData
 from services.historical_price_service import get_historical_price
 from services.ticker_service import get_ticker_list
+import uvicorn
 
 app = FastAPI()
 
@@ -42,3 +43,7 @@ def handle_ticker_search_request(
     query: str = Query(..., title="Query", description="Query for the ticker list.")
 ) -> List[TickerData]:
     return get_ticker_list(query)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
