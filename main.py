@@ -23,7 +23,9 @@ async def read_root() -> Dict[str, str]:
     return {"Health": "OK"}
 
 
-@app.get("/historical-price", response_model=HistoricalPriceResponse | Dict[None, None])
+@app.get(
+    "/historical-price", response_model=Union[HistoricalPriceResponse, Dict[None, None]]
+)
 def handle_historical_price_request(
     symbol: str = Query(
         ..., title="Symbol", description="Symbol of the financial instrument."
