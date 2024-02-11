@@ -6,5 +6,5 @@ class TickerData(BaseModel):
     symbol: str
     name: str
     currency: Optional[str]
-    stockExchange: str
-    exchangeShortName: str
+    stockExchange: Optional[str]
+    exchangeShortName: Optional[str]
