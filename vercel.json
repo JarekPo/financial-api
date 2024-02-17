@@ -14,5 +14,10 @@
   ],
   "env": {
     "APP_MODULE": "main:app"
+  },
+  "functions": {
+    "python3.10": {
+      "runtime": "python3.10"
+    }
   }
 }
