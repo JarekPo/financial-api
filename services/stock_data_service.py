@@ -8,7 +8,9 @@ from config import TWELVE_DATA_BASE_URL, DATABASE_USER, DATABASE_PASSWORD, DATAB
 
 GET_STOCKS_URL = f"{TWELVE_DATA_BASE_URL}/stocks"
 
-DATABASE_URL = f"mysql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/financial"
+DATABASE_URL = (
+    f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/verceldb"
+)
 
 
 def set_stock_data() -> Response:
