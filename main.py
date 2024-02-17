@@ -2,12 +2,14 @@ from typing import Dict, List, Union
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from models.historical_price import HistoricalPriceResponse
+from models.stock_data import StockDataInput
 from models.ticker_data import TickerData
 from services.historical_price_service import get_historical_price
+from services.stock_data_service import set_stock_data
 from services.ticker_service import get_ticker_list
 import uvicorn
 
-app = FastAPI()
+app = FastAPI(title="Financial Analysis")
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,6 +47,11 @@ def handle_ticker_search_request(
     query: str = Query(..., title="Query", description="Query for the ticker list.")
 ) -> List[TickerData]:
     return get_ticker_list(query)
+
+
+@app.post("/stocks", response_model=StockDataInput)
+def handle_stock_data_request() -> List[StockDataInput]:
+    return set_stock_data()
 
 
 if __name__ == "__main__":
