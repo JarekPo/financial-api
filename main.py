@@ -1,5 +1,5 @@
 from typing import Dict, List, Union
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from models.historical_price import HistoricalPriceResponse
 from models.stock_data import StockDataInput
@@ -50,7 +50,7 @@ def handle_ticker_search_request(
 
 
 @app.post("/stocks", response_model=StockDataInput)
-def handle_stock_data_request() -> List[StockDataInput]:
+def handle_stock_data_request() -> Response:
     return set_stock_data()
 
 
