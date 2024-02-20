@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional, Union
 from fastapi import FastAPI, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import ColumnElement
 from models.historical_price import HistoricalPriceResponse
 from models.stock_data import StockData, StockDataInput
 from models.ticker_data import TickerData
@@ -57,7 +58,7 @@ def handle_stock_data_create() -> Response:
 @app.get("/stock-search", response_model=list[StockData])
 def handle_stock_search_request(
     country: Optional[str] = Query(
-        ..., title="Country", description="Country of the financial instrument."
+        None, title="Country", description="Country of the financial instrument."
     ),
     exchange: Optional[str] = Query(
         None, title="Exchange", description="Exchange for financial instrument."
