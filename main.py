@@ -1,11 +1,11 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 from fastapi import FastAPI, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from models.historical_price import HistoricalPriceResponse
-from models.stock_data import StockDataInput
+from models.stock_data import StockData, StockDataInput
 from models.ticker_data import TickerData
 from services.historical_price_service import get_historical_price
-from services.stock_data_service import set_stock_data
+from services.stock_data_service import get_stock_list, set_stock_data
 from services.ticker_service import get_ticker_list
 import uvicorn
 
@@ -50,8 +50,26 @@ def handle_ticker_search_request(
 
 
 @app.post("/stocks", response_model=StockDataInput)
-def handle_stock_data_request() -> Response:
+def handle_stock_data_create() -> Response:
     return set_stock_data()
+
+
+@app.get("/stock-search", response_model=list[StockData])
+def handle_stock_search_request(
+    country: Optional[str] = Query(
+        ..., title="Country", description="Country of the financial instrument."
+    ),
+    exchange: Optional[str] = Query(
+        None, title="Exchange", description="Exchange for financial instrument."
+    ),
+    symbol: Optional[str] = Query(
+        None, title="Symbol", description="Symbol for financial instrument."
+    ),
+    name: Optional[str] = Query(
+        None, title="Name", description="Name for financial instrument."
+    ),
+) -> list[StockData]:
+    return get_stock_list(country, exchange, symbol, name)
 
 
 if __name__ == "__main__":

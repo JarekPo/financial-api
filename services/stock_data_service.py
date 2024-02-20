@@ -1,4 +1,5 @@
-from fastapi import HTTPException, Response
+from typing import List, Optional
+from fastapi import HTTPException, Query, Response
 from fastapi.responses import HTMLResponse
 import requests
 from sqlalchemy import create_engine, select
@@ -48,3 +49,46 @@ def set_stock_data() -> Response:
                 )
     else:
         raise HTTPException(status_code=response.status_code, detail="Unexpected error")
+
+
+def get_stock_list(
+    country: Optional[str] = Query(
+        ..., title="Country", description="Country of the financial instrument."
+    ),
+    exchange: Optional[str] = Query(
+        None, title="Exchange", description="Exchange for financial instrument."
+    ),
+    symbol: Optional[str] = Query(
+        None, title="Symbol", description="Symbol for financial instrument."
+    ),
+    name: Optional[str] = Query(
+        None, title="Name", description="Name for financial instrument."
+    ),
+) -> List[StockData]:
+    params = {"country": country, "exchange": exchange, "symbol": symbol, "name": name}
+    engine = create_engine(DATABASE_URL, echo=True)
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as session:
+
+        data_query = session.query(StockData)
+
+        filters = []
+
+        if country is not None:
+            filters.append(StockData.country == country)
+        if exchange is not None:
+            filters.append(StockData.exchange == exchange)
+        if symbol is not None:
+            filters.append(StockData.symbol == symbol)
+        if name is not None:
+            filters.append(StockData.name.like(f"%{name}%"))
+
+        if filters:
+            data_query = data_query.filter(*filters)
+
+        data = data_query.all()
+
+        if data:
+            return data
+        else:
+            raise HTTPException(status_code=404, detail="No data found for the query")
