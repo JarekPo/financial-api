@@ -6,16 +6,16 @@ from sqlalchemy import (
     ColumnElement,
     create_engine,
     select,
+    text,
 )
 from sqlmodel import SQLModel, Session
+from models.country_data import CountryData
 from models.stock_data import StockData
 from config import TWELVE_DATA_BASE_URL, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST
 
 GET_STOCKS_URL = f"{TWELVE_DATA_BASE_URL}/stocks"
 
-DATABASE_URL = (
-    f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/verceldb"
-)
+DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}"
 
 
 def set_stock_data() -> Response:
@@ -95,3 +95,39 @@ def get_stock_list(
             return data
         else:
             raise HTTPException(status_code=404, detail="No data found for the query")
+
+
+def get_country_data() -> List[CountryData]:
+    engine = create_engine(DATABASE_URL, echo=True)
+    SQLModel.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        data_query = text(
+            """
+            SELECT country, STRING_AGG(DISTINCT exchange, ', ')
+            FROM (
+                SELECT DISTINCT country, exchange
+                FROM stockdata
+            ) AS subquery
+            GROUP BY country;
+            """
+        )
+
+        results = session.execute(data_query)
+        data = []
+        for row in results:
+            country = row[0]
+            exchange = row[1]
+            if country and exchange:
+                country_data = CountryData(
+                    country=country,
+                    exchange=exchange,
+                )
+                data.append(country_data)
+
+        if data:
+            return data
+        else:
+            raise HTTPException(
+                status_code=500, detail="Error occurred while fetching country data"
+            )
