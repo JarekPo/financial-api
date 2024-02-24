@@ -2,11 +2,12 @@ from typing import Dict, List, Optional, Union
 from fastapi import FastAPI, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import ColumnElement
+from models.country_data import CountryData
 from models.historical_price import HistoricalPriceResponse
 from models.stock_data import StockData, StockDataInput
 from models.ticker_data import TickerData
 from services.historical_price_service import get_historical_price
-from services.stock_data_service import get_stock_list, set_stock_data
+from services.stock_data_service import get_country_data, get_stock_list, set_stock_data
 from services.ticker_service import get_ticker_list
 import uvicorn
 
@@ -71,6 +72,11 @@ def handle_stock_search_request(
     ),
 ) -> list[StockData]:
     return get_stock_list(country, exchange, symbol, name)
+
+
+@app.get("/country-data", response_model=List[CountryData])
+def handle_country_data_request() -> List[CountryData]:
+    return get_country_data()
 
 
 if __name__ == "__main__":
