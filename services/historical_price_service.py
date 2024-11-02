@@ -38,7 +38,7 @@ def get_historical_price(
             return {}
     elif response.status_code == 401:
         raise HTTPException(status_code=401, detail="Invalid API key")
-    elif response.status_code == 404:
+    elif response.status_code == 404 or response.status_code == 403:
         return {}
     else:
         raise HTTPException(status_code=response.status_code, detail="Unexpected error")
